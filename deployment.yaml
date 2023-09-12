@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: second-app-deployment
+  labels:
+    group: example 
+spec:  
+  replicas: 1  # no of pods to handle traffic
+  selector:
+    # matchLabels:
+    #   app: second-app
+    #   tier: backend
+    matchExpressions:
+      - {key: app, operator: In , values: [second-app,first-app]}
+  template:     # which image need to take to create pods object
+    metadata:
+      labels: 
+        app: second-app 
+        tier: backend   # you can have more then one lable in pod object
+    spec:     
+      containers:
+        - name: second-node
+          image: appdockers/kubernetes-first-app:4
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 10
+            initialDelaySeconds: 5  
+        # - name: second-node         we can have multiple image based on images
+        #   image: 
